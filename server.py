@@ -19,4 +19,9 @@ while True:
     except Exception as e:
         c.send(f"Ping failed: {e}".encode('utf-8'))
 
+<<<<<<< HEAD
 c.close()
+=======
+c.close()
+
+>>>>>>> 580ad68a6002d15660e8d7101465cd8f36b0d487
