@@ -1,27 +1,34 @@
 import socket
-from pythonping import ping
+import subprocess
+import platform
 
 s = socket.socket()
 s.bind(('localhost', 8000))
-s.listen(5)
+s.listen(1)
 print("Server listening on port 8000...")
 c, addr = s.accept()
-print(f"Connection from {addr}")
+print("Connected:", addr)
 
 while True:
+    command = c.recv(1024).decode().strip()
+    if not command or command.lower() == 'exit':
+        print("Client disconnected.")
+        break
+
     try:
-        hostname = c.recv(1024).decode('utf-8')
-        if not hostname or hostname.lower() == 'exit':
-            print("Client disconnected.")
-            break
-        response = ping(hostname, verbose=False, count=4)
-        c.send(str(response).encode('utf-8'))
+        # Run ANY command the client sends
+        completed = subprocess.run(
+            command, 
+            capture_output=True, 
+            text=True, 
+            shell=True
+        )
+        output = completed.stdout + (completed.stderr or "")
     except Exception as e:
-        c.send(f"Ping failed: {e}".encode('utf-8'))
+        output = f"Command failed: {e}"
 
-<<<<<<< HEAD
-c.close()
-=======
-c.close()
+    c.sendall(output.encode('utf-8'))
 
->>>>>>> 580ad68a6002d15660e8d7101465cd8f36b0d487
+c.close()
+s.close()
+

@@ -3,11 +3,23 @@ import socket
 s = socket.socket()
 s.connect(('localhost', 8000))
 
+print("Connected. Type any network command (ipconfig, ping, etc.) or 'exit'.")
+
 while True:
-    ip = input("Enter the website you want to ping (or type 'exit' to quit): ")
-    s.send(ip.encode('utf-8'))
-    if ip.lower() == 'exit':
+    cmd = input("Enter command: ").strip()
+    if not cmd:
+        continue
+
+    s.send(cmd.encode('utf-8'))
+    
+    if cmd.lower() == "exit":
+        print("Exiting...")
         break
-    print(s.recv(4096).decode('utf-8'))
+
+    output = s.recv(65536).decode()
+    print("\n----- RESULT -----")
+    print(output)
+    print("------------------\n")
 
 s.close()
+
